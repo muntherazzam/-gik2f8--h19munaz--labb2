@@ -236,10 +236,10 @@ function renderTask({ id, title, description, dueDate, completed }) {
     <li class="select-none mt-2 py-2 border-b border-purple-600">
     <div class="flex items-center">
     <label class="text-2xl font-bold text-orange-500 uppercase underline blur-outline" for="checkbox" id="taskLabel">Done task!</label>
-    <h3 class="text-4xl font-bold text-purple-800 uppercase line-through leading-tight text-center">${title}</h3>
+    <h3 class="text-4xl font-bold text-purple-800 uppercase line-through leading-tight text-right">${title}</h3>
       <div>
 
-      <button onclick="deleteTask(${id})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 rounded-full">Delete</button>
+      <button onclick="deleteTask(${id})" class="bg-red-500 hover:bg-red-300 text-black font-bold py-1 px-4 rounded-full">Delete</button>
       </div>
     </div>`;
 
@@ -268,28 +268,26 @@ function deleteTask(id) {
   });
 }
 
-/***********************Labb 2 ***********************/
 
-/***********************Labb 2 ***********************/
 async function updateTask(id) {
-  // Create the update object with the id and completed status
+ 
   const updateTask = {
     id: id,
     completed: true,
   };
 
   try { 
-    // Call the API to update the task
+   
     await api.update(updateTask);
 
-    // If the API call is successful, render the updated task list
+  
     renderList();
   } catch (error) {
-    // If there is an error, log it to the console
+   
     console.error(error);
   }
 }
 
-// Render the initial task list
+
 
 renderList();

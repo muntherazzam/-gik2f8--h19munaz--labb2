@@ -64,85 +64,89 @@ app.post('/tasks', async (req, res) => {
         maxTaskId
       );
     }
-
-    /* En ny uppgift skapas baserat på den uppgift som skickades in och som hämtades ur req.body, samt egenskapen id som sätts till det högsta id av de uppgifter som redan finns (enligt uträkning med hjälp av reduce ovan) plus ett. Det befintliga objektet och det nya id:t slås ihop till ett nytt objekt med hjälp av spreadoperatorn ... */
     const newTask = { id: maxTaskId + 1, ...task };
-    /* Om currentTasks finns - dvs det finns tidigare lagrade uppgifter,  skapas en ny array innehållande tidigare uppgifter (varje befintlig uppgift i currentTasks läggs till i den nya arrayen med hjälp av spreadoperatorn) plus den nya uppgiften. Om det inte tidigare finns några uppgifter, skapas istället en ny array med endast den nya uppgiften.  */
+    
     const newList = currentTasks ? [...currentTasks, newTask] : [newTask];
 
-    /* Den nya listan görs om till en textsträng med hjälp av JSON.stringify och sparas ner till filen tasks.json med hjälp av fs-modulens writeFile-metod. Anropet är asynkront så await används för att invänta svaret innan koden går vidare. */
     await fs.writeFile('./tasks.json', JSON.stringify(newList));
-    /* Det är vanligt att man vid skapande av någon ny resurs returnerar tillbaka den nya sak som skapades. Så den nya uppgiften skickas med som ett success-response. */
+   
     res.send(newTask);
   } catch (error) {
-    /* Vid fel skickas istället statuskod 500 och information om felet.  */
+ 
     res.status(500).send({ error: error.stack });
   }
 });
-/* Express metod för att lyssna efter DELETE-anrop heter naturligt delete(). I övrigt fungerar den likadant som get och post */
 
-/* Route-adressen som specificeras i delete har /:id i tillägg till adressen. Det betyder att man i adressen kan skriva task följt av ett / och sedan något som kommer att sparas i en egenskap vid namn id. :id betyder att det som står efter / kommer att heta id i requestobjektet. Hade kunnat vara vad som helst. Så här möjliggörs att lyssna efter DELETE-anrop på exempelvis url:en localhost:5000/task/1 där 1 då skulle motsvara ett id på den uppgift man vill ta bort */
 app.delete('/tasks/:id', async (req, res) => {
   console.log(req);
   try {
-    /* För att nå egenskaper tagna ur url:en  använder man req.params och sedan namnet som man gett egenskapen, i detta fall id, då vi skrev :id. */
-    const id = req.params.id;
-    /* På samma sätt som vid post, hämtas filens befintliga innehåll ut med hjälp av fs.readFile, som inväntas med await. */
-    const listBuffer = await fs.readFile('./tasks.json');
-    /* Innehållet i filen parsas till JavaScript för att kunna behandlas vidare i kod. */
-    const currentTasks = JSON.parse(listBuffer);
-    /* Först en kontroll om det ens finns något i filen, annars finns ju inget att ta bort */
+    // Get the task ID from the request params
+    const taskId = req.params.id;
+
+    // Read the tasks from the tasks.json file
+    const tasksBuffer = await fs.readFile('./tasks.json');
+    const currentTasks = JSON.parse(tasksBuffer);
+
+    // Check if there are any tasks in the file
     if (currentTasks.length > 0) {
-      /* Om det finns något i filen görs här en hel del i samma anrop: 
-      1. De befintliga uppgifterna (currentTasks), filtreras så att den uppgift med det id som skickades in filtreras bort och endast de uppgifter som inte hade det id:t är kvar.
-      2. Arrayen med alla uppgifter utom den med det id som skickades in görs om till en sträng med JSON.stringify
-      3. Denna sträng sparas slutgilgingen till filen tasks.json, så att det kommer att finnas en uppdaterad lista som inte längre innehåller uppgiften med det id som skickades in via url:en. */
-      await fs.writeFile(
-        './tasks.json',
-        JSON.stringify(currentTasks.filter((task) => task.id != id))
-      );
-      /* När den nya listan har skrivits till fil skickas ett success-response  */
-      res.send({ message: `Uppgift med id ${id} togs bort` });
+      // Remove the task with the matching ID from the list
+      const updatedTasks = currentTasks.filter((task) => task.id != taskId);
+
+      // Write the updated list of tasks to the tasks.json file
+      await fs.writeFile('./tasks.json', JSON.stringify(updatedTasks));
+
+      // Send a success response
+      res.send({ message: `Uppgift med id ${taskId} togs bort` });
     } else {
-      /* Om det inte fanns något i filen sedan tidigare skickas statuskod 404. 404 används här för att det betyder "Not found", och det stämmer att den uppgift som man ville ta bort inte kunde hittas om listan är tom. Vi har dock inte kontrollerat inuti en befintlig lista om det en uppgift med det id som man önskar ta bort faktiskt finns. Det hade man också kunnat göra. */
+      // If there are no tasks in the file, send a "not found" error
       res.status(404).send({ error: 'Ingen uppgift att ta bort' });
     }
   } catch (error) {
-    /* Om något annat fel uppstår, skickas statuskod 500, dvs. ett generellt serverfel, tillsammans med information om felet.  */
+    // If any other error occurs, send a "server error" response
     res.status(500).send({ error: error.stack });
   }
 });
+
 
 /***********************Labb 2 ***********************/
 /* Här skulle det vara lämpligt att skriva en funktion som likt post eller delete tar kan hantera PUT- eller PATCH-anrop (du får välja vilket, läs på om vad som verkar mest vettigt för det du ska göra) för att kunna markera uppgifter som färdiga. Den nya statusen - completed true eller falase - kan skickas i förfrågans body (req.body) tillsammans med exempelvis id så att man kan söka fram en given uppgift ur listan, uppdatera uppgiftens status och till sist spara ner listan med den uppdaterade uppgiften */
 
 /* Observera att all kod rörande backend för labb 2 ska skrivas i denna fil och inte i app.node.js. App.node.js är bara till för exempel från lektion 5 och innehåller inte någon kod som används vidare under lektionerna. */
 /***********************Labb 2 ***********************/
-
-/* Med app.listen säger man åte servern att starta. Första argumentet är port - dvs. det portnummer man vill att servern ska köra på. Det sattes till 5000 på rad 9. Det andra argumentet är en anonym arrow-funktion som körs när servern har lyckats starta. Här skrivs bara ett meddelande ut som berättar att servern kör, så att man får feedback på att allt körts igång som det skulle. */
 app.patch('/tasks', async (req, res) => {
   try {
+    // Read the contents of the tasks.json file
+    const listBuffer = await fs.readFile('./tasks.json');
+    // Parse the contents of the file to JavaScript
+    const currentTasks = JSON.parse(listBuffer);
+
+    // Get the updated task from the request body
     const task = req.body;
 
-    // Read the file contents
-    const ListBuffer = await fs.readFile('./tasks.json');
-    // Parse the file contents into a JavaScript object
-    const currentList = JSON.parse(ListBuffer);
-    // Find the task with the matching id
-    const i = currentList.findIndex(item => item.id === task.id);
+    // Find the index of the task with the matching id
+    const taskIndex = currentTasks.findIndex(item => item.id === task.id);
+    if (taskIndex === -1) {
+      // If the task is not found, return a 404 status code
+      return res.status(404).send({ error: 'Task not found' });
+    }
 
-    // Toggle the completion status of the task
-    currentList[i].completed = !currentList[i].completed;
+    // Update the task's completed status
+    currentTasks[taskIndex].completed = task.completed;
 
-    // Write the updated list to the file
-    await fs.writeFile('./tasks.json', JSON.stringify(currentList));
+    // Write the updated list to the tasks.json file
+    await fs.writeFile('./tasks.json', JSON.stringify(currentTasks));
 
-    res.send(currentList);
+    // Send the updated list of tasks back to the client
+    return res.send(currentTasks);
   } catch (error) {
-    console.log(error);
-    res.sendStatus(500);
+    // If there is an error, log it to the console and send a 500 status code
+    console.error(error);
+    return res.status(500).send({ error: 'An error occurred while updating the task' });
   }
 });
 
 
-app.listen(PORT, () => console.log('Server running on http://localhost:5500'));
+
+
+
+    

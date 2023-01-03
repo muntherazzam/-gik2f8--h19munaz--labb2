@@ -120,4 +120,29 @@ app.delete('/tasks/:id', async (req, res) => {
 /***********************Labb 2 ***********************/
 
 /* Med app.listen säger man åte servern att starta. Första argumentet är port - dvs. det portnummer man vill att servern ska köra på. Det sattes till 5000 på rad 9. Det andra argumentet är en anonym arrow-funktion som körs när servern har lyckats starta. Här skrivs bara ett meddelande ut som berättar att servern kör, så att man får feedback på att allt körts igång som det skulle. */
-app.listen(PORT, () => console.log('Server running on http://localhost:5000'));
+app.patch('/tasks', async (req, res) => {
+  try {
+    const task = req.body;
+
+    // Read the file contents
+    const ListBuffer = await fs.readFile('./tasks.json');
+    // Parse the file contents into a JavaScript object
+    const currentList = JSON.parse(ListBuffer);
+    // Find the task with the matching id
+    const i = currentList.findIndex(item => item.id === task.id);
+
+    // Toggle the completion status of the task
+    currentList[i].completed = !currentList[i].completed;
+
+    // Write the updated list to the file
+    await fs.writeFile('./tasks.json', JSON.stringify(currentList));
+
+    res.send(currentList);
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+});
+
+
+app.listen(PORT, () => console.log('Server running on http://localhost:5500'));

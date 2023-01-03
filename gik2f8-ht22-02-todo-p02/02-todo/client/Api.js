@@ -8,7 +8,7 @@ Gör då följande här i VS Code:
 3. Skriv "npm install" (utan citattecken) och sedan enter
 3. Skriv "node app.js" (utan citattecken) och enter. 
 
-Om servern startats korrekt syns nu texten "Server running on http://localhost:5000".
+Om servern startats korrekt syns nu texten "Server running on http://localhost:5500".
 
 */
 
@@ -131,4 +131,30 @@ class Api {
   */
 
   /***********************Labb 2 ***********************/
+  async update(data) {
+    const JSONData = JSON.stringify(data);
+    console.log(data);
+    console.log(`Sending ${JSONData} to ${this.url}`);
+    const request = new Request(this.url, {
+      method: 'PATCH',
+      body: JSONData,
+      headers: {
+        'content-type': 'application/json'
+      }
+    });
+  
+    try {
+      const response = await fetch(request);
+      if (!response.ok) {
+        throw new Error(`Failed to update data: ${response.statusText}`);
+      }
+    
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error(error);
+    }
+
+    
+  }
 }

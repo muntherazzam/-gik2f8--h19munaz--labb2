@@ -8,7 +8,7 @@ Gör då följande här i VS Code:
 3. Skriv "npm install" (utan citattecken) och sedan enter
 3. Skriv "node app.js" (utan citattecken) och enter. 
 
-Om servern startats korrekt syns nu texten "Server running on http://localhost:5500".
+Om servern startats korrekt syns nu texten "Server running on http://localhost:5000".
 
 */
 

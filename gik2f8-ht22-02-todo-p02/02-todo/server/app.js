@@ -6,7 +6,7 @@ const app = express();
 /* Importerar den inbyggda modulen fs */
 const fs = require('fs/promises');
 
-const PORT = 5555;
+const PORT = 5000;
 /* Expressobjektet, kallat app, har metoden "use" som används för att sätta inställningar hos vår server */
 app
   /* Man kan ange format etc. på de data som servern ska kunna ta emot och skicka. Metoderna json och urlencoded är inbyggda hos express */

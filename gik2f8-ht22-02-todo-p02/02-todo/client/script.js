@@ -1,29 +1,9 @@
-/* Form-element ligger direkt på document-objektet och är globalt. Det betyder att man kan komma åt det utan att hämta upp det via exempelvis document.getElementById. 
 
-Andra element, såsom t.ex. ett div-element behöver hämtas ur HTML-dokumentet för att kunna hämtas i JavaScript. 
-
-Man skulle behöva skriva const todoList = document.getElemenetById("todoList"), för att hämta det elementet och sedan komma åt det via variabeln todoList. För formulär behöver man inte det steget, utan kan direkt använda todoForm (det id- och name-attribut som vi gav form-elementet), utan att man först skapar variabeln och hämtar form-elementet.
-*/
-
-/* På samma sätt kommer man åt alla fält i todoForm via dess name eller id-attribut. Så här kan vi använda title för att nå input-fältet title, som i HTML ser ut såhär: 
-<input type="text" id="title" name="title" class="w-full rounded-md border-yellow-500 border-2 focus-within:outline-none focus:border-yellow-600 px-4 py-2" /> 
-
-Nedan används därför todoForm.[fältnamn] för att sätta eventlyssnare på respektive fält i formuläret.*/
-
-/* Eventen som ska fångas upp är 
-1. När någon ställt muspekaren i inputfältet och trycker på en tangent 
-2. När någon lämnar fältet, dvs. klickar utanför det eller markerar nästa fält. 
-
-För att fånga tangenttryck kan man exempelvis använda eventtypen "keyup" och för att fånga eventet att någon lämnar fältet använder man eventtypen "blur" */
-
-/* Till alla dessa fält och alla dessa typer av event koppplas en och samma eventlyssnare; validateField. Eventlyssnaren är funktionen validateField och den vill ta emot själva fältet som berörs. Eftersom man inte får sätta parenteser efter en eventlyssnare när man skickar in den, får man baka in den i en anonym arrow-function. Man får alltså inte skriva todoForm.title.addEventListener("keyup", validateField(e.target)), utan man måste använda en omslutande funktion för att skicka e.target som argument. Därför används en anonym arrowfunction med bara en rad - att anropa validateField med det argument som den funktionen vill ha.  */
 todoForm.title.addEventListener('keyup', (e) => validateField(e.target));
 todoForm.title.addEventListener('blur', (e) => validateField(e.target));
-/* En annan eventtyp som kan användas för att fånga tangenttryck är "input". De fungerar lite olika, men tillräckligt lika för vårt syfte. Kolla gärna själva upp skillnader.  */
 todoForm.description.addEventListener('input', (e) => validateField(e.target));
 todoForm.description.addEventListener('blur', (e) => validateField(e.target));
 
-/* I dueDate måste man fånga upp input, då man kan förändra fältet genom att välja datum i en datumväljare, och således aldrig faktiskt skriva i fältet.  */
 todoForm.dueDate.addEventListener('input', (e) => validateField(e.target));
 todoForm.dueDate.addEventListener('blur', (e) => validateField(e.target));
 
@@ -218,20 +198,21 @@ function renderTask({ id, title, description, dueDate, completed }) {
     let html = `
     
   
-    <li class="select-none mt-2 py-2 border-b border-amber-300"> 
-
-    <div class="flex items-center justify-end">
-    <p class="text-s font-bold text-yellow-500 leading-tight">Markera färdig </p>
-    <input type="checkbox" onclick="updateTask(${id})" class="ml-2">
-   </div>
+    <li class="select-none mt-2 py-2 border-b border-red-600 blur-outline">
+    <div class="flex items-center justify-start">
+      <p class="text-xl font-bold text-green-500 leading-tight">Done</p>
+      <input type="checkbox" onclick="updateTask(${id})" class="ml-2">
+    </div>
+  
+  
   
     
-      <h3 class="mb-4 flex-1 text-xl font-bold text-purple-900 uppercase">${title}</h3>
-      <div>
-        <span class="ml-2">datum: ${dueDate} </span>
-        <button onclick="deleteTask(${id})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-full">Radera</button>
-      </div>
-    </div>`;
+    <h3 class="mb-4 flex-1 text-2xl font-bold text-green-500 uppercase">${title}</h3>
+    <div class="justify-end">
+      <span class="ml-2 text-gray-700">datum: ${dueDate} </span>
+      <button onclick="deleteTask(${id})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-md">Delete</button>
+    </div>
+    `;
  
 
   description &&
@@ -244,9 +225,6 @@ function renderTask({ id, title, description, dueDate, completed }) {
     html += `
     </li>`;
 
-    /***********************Labb 2 ***********************/
-    /* I ovanstående template-sträng skulle det vara lämpligt att sätta en checkbox, eller ett annat element som någon kan klicka på för att markera en uppgift som färdig. Det elementet bör, likt knappen för delete, också lyssna efter ett event (om du använder en checkbox, kolla på exempelvis w3schools vilket element som triggas hos en checkbox när dess värde förändras.). Skapa en eventlyssnare till det event du finner lämpligt. Funktionen behöver nog ta emot ett id, så den vet vilken uppgift som ska markeras som färdig. Det skulle kunna vara ett checkbox-element som har attributet on[event]="updateTask(id)". */
-    /***********************Labb 2 ***********************/
 
     return html;
   }
@@ -255,13 +233,13 @@ function renderTask({ id, title, description, dueDate, completed }) {
     
   
     
-    <li class=" select-none mt-2 py-2 border-b border-amber-300">
-    <div class="flex items-center "></div>
-    <label class="text-1xl font-bold text-lime-600 uppercase underline" for="checkbox">Färdig uppgift!</label>
+    <li class="select-none mt-2 py-2 border-b border-purple-600">
+    <div class="flex items-center">
+    <label class="text-2xl font-bold text-orange-500 uppercase underline blur-outline" for="checkbox" id="taskLabel">Done task!</label>
     <h3 class="text-4xl font-bold text-purple-800 uppercase line-through leading-tight text-center">${title}</h3>
       <div>
 
-      <button onclick="deleteTask(${id})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 rounded-full">Radera</button>
+      <button onclick="deleteTask(${id})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 rounded-full">Delete</button>
       </div>
     </div>`;
 
@@ -278,9 +256,6 @@ description &&
 }
 
 
-    /***********************Labb 2 ***********************/
-    /* I ovanstående template-sträng skulle det vara lämpligt att sätta en checkbox, eller ett annat element som någon kan klicka på för att markera en uppgift som färdig. Det elementet bör, likt knappen för delete, också lyssna efter ett event (om du använder en checkbox, kolla på exempelvis w3schools vilket element som triggas hos en checkbox när dess värde förändras.). Skapa en eventlyssnare till det event du finner lämpligt. Funktionen behöver nog ta emot ett id, så den vet vilken uppgift som ska markeras som färdig. Det skulle kunna vara ett checkbox-element som har attributet on[event]="updateTask(id)". */
-    /***********************Labb 2 ***********************/
 
 
 function deleteTask(id) {
@@ -316,4 +291,5 @@ async function updateTask(id) {
 }
 
 // Render the initial task list
+
 renderList();

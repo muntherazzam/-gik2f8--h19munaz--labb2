@@ -175,6 +175,9 @@ function saveTask() {
   todoForm.title.value="" ;
     todoForm.description.value="" ;
     todoForm.dueDate.value="";
+    titleValid = false;
+    descriptionValid = false;
+    dueDateValid = false;
 }
 
 /* En funktion som ansvarar för att skriva ut todo-listan i ett ul-element. */
@@ -304,10 +307,23 @@ Om du hittar något annat sätt som funkar för dig, använd för all del det, s
 /***********************Labb 2 ***********************/
 
 /* Slutligen. renderList anropas också direkt, så att listan visas när man först kommer in på webbsidan.  */
-function updateTask(id){
-  api.update(id).then((result)=>{
-    renderList()
-  });
+async function updateTask(id) {
+  // Create the update object with the id and completed status
+  const updateTask = {
+    id: id,
+    completed: true,
+  };
+
+  try { 
+    // Call the API to update the task
+    await api.update(updateTask);
+
+    // If the API call is successful, render the updated task list
+    renderList();
+  } catch (error) {
+    // If there is an error, log it to the console
+    console.error(error);
+  }
 }
 
 function sortDueDate(tasks) {

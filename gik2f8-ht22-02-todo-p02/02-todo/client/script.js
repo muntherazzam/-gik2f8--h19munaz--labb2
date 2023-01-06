@@ -28,7 +28,7 @@ constructor(url) {...}
 Denna url skickas in till Api-klassen genom att man anger new, klassens namn (Api), parenteser. Inom parenteserna skickas sedan det som konstruktorn vill ta emot - dvs. url:en till vårt api. 
 
 Adressen som skickas in är http://localhost:5000/tasks och innan det fungerar är det viktigt att ändra det i servern. I Lektion 5 sattes alla routes till /task. Dessa ska ändras till /tasks. Dessa routes är första argumenten till app.get, app.post och app.delete, så det ser ut ungefär app.get("/task",...). Alla sådana ska ändras till "/tasks". */
-const api = new Api('http://localhost:5555/tasks');
+const api = new Api('http://localhost:5000/tasks');
 
 /* Nedan följer callbackfunktionen som är kopplad till alla formulärets fält, när någon skriver i det eller lämnar det.
 
@@ -198,11 +198,13 @@ function renderTask({ id, title, description, dueDate, completed }) {
     let html = `
     
   
-    <li class="select-none mt-2 py-2 border-b border-red-600 blur-outline">
-    <div class="flex items-center justify-start">
-      <p class="text-xl font-bold text-green-500 leading-tight">Done</p>
-      <input type="checkbox" onclick="updateTask(${id})" class="ml-2">
+    <li class="mt-4 border-b border-purple-700">
+    <div class="flex items-center justify-start px-4 py-3">
+      <p class="text-xl font-bold text-purple-500 leading-tight">Done</p>
+      <input type="checkbox" onclick="updateTask(${id})" class="ml-2 form-checkbox focus:outline-none">
     </div>
+  </li>
+  
   
   
   
@@ -233,15 +235,14 @@ function renderTask({ id, title, description, dueDate, completed }) {
     
   
     
-    <li class="select-none mt-2 py-2 border-b border-purple-600">
-    <div class="flex items-center">
-    <label class="text-2xl font-bold text-orange-500 uppercase underline blur-outline" for="checkbox" id="taskLabel">Done task!</label>
-    <h3 class="text-4xl font-bold text-purple-800 uppercase line-through leading-tight text-right">${title}</h3>
-      <div>
-
-      <button onclick="deleteTask(${id})" class="bg-red-500 hover:bg-red-300 text-black font-bold py-1 px-4 rounded-full">Delete</button>
-      </div>
-    </div>`;
+    <li class="mt-4 border-b border-purple-600">
+    <div class="flex items-center justify-between px-4 py-3">
+      <label class="text-2xl font-bold text-orange-500 uppercase underline hover:blur-outline focus:blur-outline" for="checkbox" id="taskLabel">Done task!</label>
+      <h3 class="text-4xl font-bold text-purple-800 uppercase line-through leading-tight">${title}</h3>
+      <button onclick="deleteTask(${id})" class="bg-red-500 hover:bg-red-300 text-white font-bold py-2 px-4 rounded-full focus:outline-none">Delete</button>
+    </div>
+  </li>
+  `;
 
 
 description &&

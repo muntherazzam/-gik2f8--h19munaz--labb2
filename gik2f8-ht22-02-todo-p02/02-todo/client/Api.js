@@ -49,28 +49,34 @@ class Api {
   }
 
 /*här jag la till update med patch metoden*/
-  async update(data) {
-    try {
-      const JSONData = JSON.stringify(data);
-      console.log(data);
-      console.log(`Sending ${JSONData} to ${this.url}`);
-      const request = new Request(this.url, {
-        method: 'PATCH',
-        body: JSONData,
-        headers: {
-          'content-type': 'application/json'
-        }
-      });
-  
-      const response = await fetch(request);
-      if (!response.ok) {
-        throw new Error(`Failed to update data: ${response.statusText}`);
+async update(data) {
+  try {
+    // Omvandla data-objektet till en JSON-sträng
+    const JSONData = JSON.stringify(data);
+
+    // Skicka en HTTP PATCH-begäran med JSON-strängen som body
+    const request = new Request(this.url, {
+      method: 'PATCH',
+      body: JSONData,
+      headers: {
+        'content-type': 'application/json'
       }
-  
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error(error);
+    });
+
+    // Skicka begäran och vänta på svar
+    const response = await fetch(request);
+
+    // Om begäran inte lyckades, kasta ett fel
+    if (!response.ok) {
+      throw new Error(`Misslyckades med att uppdatera data: ${response.statusText}`);
     }
-  } 
+
+    // Avkoda JSON-svar till ett objekt och returnera det
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    // Logga felet till konsolen
+    console.error(error);
+  }
+}
 }
